@@ -1,0 +1,12 @@
+node_modules
+build
+.git
+.github
+.husky
+*.md
+!README.md
+test
+site
+samples
+coverage
+.nyc_output
