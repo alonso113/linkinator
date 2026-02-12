@@ -18,11 +18,16 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      # - uses: googleapis/release-please-action@v4
+      #   id: release
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     release-type: simple
+      - name: Set dummy release output for testing
         id: release
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: simple
+        run: |
+          echo "release_created=true" >> $GITHUB_OUTPUT
+          echo "tag_name=v1.0.0-test" >> $GITHUB_OUTPUT
   publish:
     if: needs.release-please.outputs.release_created
     runs-on: ubuntu-latest
