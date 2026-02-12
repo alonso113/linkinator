@@ -1,19 +1,12 @@
-FROM node:22 AS build
-WORKDIR /app
+FROM debian:bookworm-slim
 
-COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
+ARG BINARY_PATH=build/binaries/linkinator-linux
 
-COPY tsconfig.json ./
-COPY src/ ./src/
-RUN npm run build
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-FROM node:22
-WORKDIR /app
+COPY ${BINARY_PATH} /usr/local/bin/linkinator
+RUN chmod +x /usr/local/bin/linkinator
 
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
-
-COPY --from=build /app/build ./build
-
-ENTRYPOINT ["node", "build/src/cli.js"]
+ENTRYPOINT ["linkinator"]
