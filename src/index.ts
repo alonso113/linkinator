@@ -49,7 +49,7 @@ import {
 	type StatusCodeAction,
 } from './options.js';
 import { Queue } from './queue.js';
-import { startWebServer } from './server.js';
+import { startWebServer, stopWebServer } from './server.js';
 import { bufferStream, drainStream, toNodeReadable } from './stream-utils.js';
 import { normalizeBaseUrl } from './url-utils.js';
 
@@ -239,7 +239,7 @@ export class LinkChecker extends EventEmitter {
 			passed: results.filter((x) => x.state === LinkState.BROKEN).length === 0,
 		};
 		if (server) {
-			server.destroy();
+			await stopWebServer(server);
 		}
 
 		return result;
