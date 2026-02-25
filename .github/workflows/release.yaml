@@ -2,13 +2,14 @@ on:
   push:
     branches:
       - main
+      - test
 name: release
 env:
   FORCE_COLOR: 2
   NODE: 24
 jobs:
   release-please:
-    if: github.repository == 'JustinBeckwith/linkinator'
+    if: always()
     runs-on: ubuntu-latest
     permissions:
       contents: write
