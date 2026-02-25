@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.set-tag.outputs.tag_name }}
+      version: ${{ steps.set-version.outputs.version}}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -34,7 +35,11 @@ jobs:
 
       - name: Set dummy tag name
         id: set-tag
-        run: echo "tag_name=v1.0.0-test" >> $GITHUB_OUTPUT
+        run: echo "tag_name=linkinator-v3.8.2" >> $GITHUB_OUTPUT
+
+      - name: Set dummy version name
+        id: set-version
+        run: echo "version=3.8.2" >> $GITHUB_OUTPUT
   docker:
     runs-on: ubuntu-latest
     needs: [build]
@@ -58,6 +63,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
+            type=semver,pattern={{version}},value=${{ needs.build.outputs.tag_name }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.build.outputs.tag_name }}
+            type=semver,pattern={{major}},value=${{ needs.build.outputs.tag_name }}
             type=raw,value=latest
       - uses: docker/build-push-action@v6
         with:
