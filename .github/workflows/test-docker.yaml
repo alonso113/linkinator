@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.set-tag.outputs.tag_name }}
+      version: ${{ steps.set-version.outputs.version}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -32,7 +33,11 @@ jobs:
 
       - name: Set dummy tag name
         id: set-tag
-        run: echo "tag_name=v1.0.0-test" >> $GITHUB_OUTPUT
+        run: echo "tag_name=linkinator-v3.8.2" >> $GITHUB_OUTPUT
+
+      - name: Set dummy version name
+        id: set-version
+        run: echo "version=v3.8.2" >> $GITHUB_OUTPUT
 
   docker:
     runs-on: ubuntu-latest
@@ -41,7 +46,8 @@ jobs:
       contents: read
       packages: write
     env:
-      DUMMY_TAG_NAME: ${{ needs.build.outputs.tag_name }}
+      tag: ${{ needs.build.outputs.tag_name }}
+      version: ${{ needs.build.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -69,9 +75,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/linkinator
           tags: |
-            type=semver,pattern={{version}},value=${{ env.DUMMY_TAG_NAME }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ env.DUMMY_TAG_NAME }}
-            type=semver,pattern={{major}},value=${{ env.DUMMY_TAG_NAME }}
+            type=semver,pattern={{version}},value=${{ env.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.version }}
+            type=semver,pattern={{major}},value=${{ env.version }}
             type=raw,value=latest
 
       - name: Build and push Docker image
