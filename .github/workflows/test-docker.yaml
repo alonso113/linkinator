@@ -37,7 +37,7 @@ jobs:
 
       - name: Set dummy version name
         id: set-version
-        run: echo "version=v3.8.2" >> $GITHUB_OUTPUT
+        run: echo "version=3.8.2" >> $GITHUB_OUTPUT
 
   docker:
     runs-on: ubuntu-latest
@@ -45,9 +45,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    env:
-      tag: ${{ needs.build.outputs.tag_name }}
-      version: ${{ needs.build.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -75,9 +72,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/linkinator
           tags: |
-            type=semver,pattern={{version}},value=${{ env.version }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ env.version }}
-            type=semver,pattern={{major}},value=${{ env.version }}
+            type=semver,pattern={{version}},value=${{ needs.build.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ needs.build.outputs.version }}
+            type=semver,pattern={{major}},value=${{ needs.build.outputs.version }}
             type=raw,value=latest
 
       - name: Build and push Docker image
